@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: AI
+  m_EditorClassIdentifier: Assembly-CSharp::BotData
+  remuneration: 0
+  typeKill: 1
+  priorityEffects:
+  - target: 1
+    targetEffect: 4
+    targetPower: 1
+    powerRC: 5
+    targetRC: 1
+  priorityStatic:
+  - target: 0
+    targetStatic: 4
+    targetPower: 1.5
+    powerRC: 1.2
+    targetRC: 2
+  - target: 1
+    targetStatic: 3
+    targetPower: -1
+    powerRC: 1
+    targetRC: 1
+  - target: 0
+    targetStatic: 4
+    targetPower: -1
+    powerRC: 0.9
+    targetRC: 0
+  attackRC: 0.5
+  defendRC: 1.4
+  skipRC: 0.8
+  itemRC:
+  - 0
+  - 0
+  - 0

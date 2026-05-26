@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c20d0b449ae3547867329376a477d6, type: 3}
+  m_Name: Fire Sword
+  m_EditorClassIdentifier: 
+  level: 0
+  iconSprite: {fileID: 0}
+  defendClass:
+    defens: 8
+    defensRecharge: 0
+    DefendCost: 2
+  effectItemClass:
+  - icon: {fileID: 21300000, guid: fca3897cd6445e64f88f37ea5d3fa8e2, type: 3}
+    effectName: 
+    effectClass:
+      effect:
+        effectType: 4
+        effectPower: 1
+      effectType: 4
+      acionTarget: 0
+      target: 0
+      powerMin: 1
+      power: 1
+      powerMax: 20
+    targetEffect: 10
+  - icon: {fileID: 0}
+    effectName: 
+    effectClass:
+      effect:
+        effectType: 4
+        effectPower: 1
+      effectType: 4
+      acionTarget: 0
+      target: 0
+      powerMin: 1
+      power: 1
+      powerMax: 20
+    targetEffect: 10
+  attackClass:
+    attacType: 0
+    damage: 8
+    attackRecharge: 0
+    attackCost: 2
+  description: 
+  itemID: 0

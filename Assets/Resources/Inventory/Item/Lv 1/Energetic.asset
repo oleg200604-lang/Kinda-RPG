@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 080a243fc87ecc2499620315098206fa, type: 3}
+  m_Name: Energetic
+  m_EditorClassIdentifier: 
+  level: 1
+  iconSprite: {fileID: 21300000, guid: dfefcd980e7f7534180d69dbaa772029, type: 3}
+  itemClass:
+  - effectSetting:
+      effectType: 2
+      effectPower: 1
+    effectTarget: 0
+    effectType: 1
+  - effectSetting:
+      effectType: 3
+      effectPower: -2
+    effectTarget: 0
+    effectType: 0
+  itemName: A potion that gives you the strength to work, live, and make terrible
+    decisions at 3 a.m. Overdosing adds poisoning and an existential crisis.
+  itemRecharge: 3
+  itemCost: 1
+  itemMaxAmount: 3
+  description: 
