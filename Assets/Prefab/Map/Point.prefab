@@ -453,6 +453,27 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 416a6f607fea7d74db77587cb64e8406, type: 3}
     - {fileID: 21300000, guid: 0a662905493915f4a8dadbea20ba8a77, type: 3}
     playerPosition: {x: 0, y: 0, z: 0}
-  botDatas: 00000000
+  - Name: Assasin
+    Lv: 1
+    XP: 0
+    XPMax: e7030000
+    staticPlayer:
+      power: 1
+      speed: 2
+      staminaMax: 3
+      vitalityMax: 30
+    inventory: 
+    weapon: 2
+    armor: 4
+    items: 
+    hitPoint: 30
+    animatorSprite:
+    - {fileID: 21300000, guid: c7908e81815476249adf0ffdb09b81cc, type: 3}
+    - {fileID: 21300000, guid: 17411d1165468ef46a95f669bc1d31e9, type: 3}
+    - {fileID: 21300000, guid: 1872cf9457d775747bac06d2ff998f12, type: 3}
+    - {fileID: 21300000, guid: 041b704b2b47af44d9b0cb7a927b36c4, type: 3}
+    - {fileID: 21300000, guid: 0920af946a888fb49a8638bbfb533b0e, type: 3}
+    playerPosition: {x: 0, y: 0, z: 0}
+  botDatas: 0000000001000000
   isZoneNPC: 0
   point: {fileID: 5423259737421505776}

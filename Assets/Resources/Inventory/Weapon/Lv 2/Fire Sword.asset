@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Fire Sword
   m_EditorClassIdentifier: 
   level: 0
-  iconSprite: {fileID: 0}
+  iconSprite: {fileID: 21300000, guid: fca3897cd6445e64f88f37ea5d3fa8e2, type: 3}
   defendClass:
     defens: 8
     defensRecharge: 0

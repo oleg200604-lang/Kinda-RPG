@@ -63,7 +63,10 @@ public class EffectSetting
                 {
                     effectPower = 0;
                 }
-                effectPower += 1;
+                if (effectPower>0)
+                {
+                    effectPower += 1;
+                }
                 break;
 
             case Effect.Frostbite:

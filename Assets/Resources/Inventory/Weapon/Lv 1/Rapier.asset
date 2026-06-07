@@ -24,7 +24,7 @@ MonoBehaviour:
     effectClass:
       effect:
         effectType: 8
-        effectPower: 1
+        effectPower: 0
       effectType: 9
       acionTarget: 0
       target: 0

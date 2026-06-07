@@ -25,7 +25,7 @@ public class EnemyZoneScr : MonoBehaviour
         }
 
         int randomIndex = Random.Range(0, inventoryDatas.Length);
-
+        print(randomIndex);
         PlayerMoveScr playerMove =
             FindObjectOfType<PlayerMoveScr>();
 
@@ -46,7 +46,7 @@ public class EnemyZoneScr : MonoBehaviour
         carrier.enemyInventoryData = inventoryDatas[randomIndex];
 
         carrier.bot = botDatas[randomIndex];
-
+        
         playerMove.SaveCurrentPoint();
 
         if (WorldMapGeneratorScr.Instance != null)

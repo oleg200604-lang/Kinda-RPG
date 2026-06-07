@@ -90,7 +90,7 @@ public class PlayerMoveScr : MonoBehaviour
     // INTERACTION
     // ─────────────────────────────────────────
 
-    private void InteractWithCurrentPoint()
+    public void InteractWithCurrentPoint()
     {
         if (currentPoint == null)
             return;
@@ -266,10 +266,6 @@ public class PlayerMoveScr : MonoBehaviour
         }
     }
 
-    // ─────────────────────────────────────────
-    // HELPERS
-    // ─────────────────────────────────────────
-
     private PointScr FindPointById(int id)
     {
         PointScr[] points =
@@ -311,11 +307,6 @@ public class PlayerMoveScr : MonoBehaviour
 
         return closest;
     }
-
-    // ─────────────────────────────────────────
-    // UI
-    // ─────────────────────────────────────────
-
     private void CloseAllZoneUI()
     {
         NPCZoneUIScr zoneUI =

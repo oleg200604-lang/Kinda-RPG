@@ -401,6 +401,7 @@ public class PlayerScr : MonoBehaviour
                 case TargetEffect.targetNoneHitPoint:
                     RunEffectIntWapon(target, power + inventory.weaponData.effectItemClass[i].effectClass.power, i, (targetEffect.playerStats.vitalityMax + targetEffect.playerBonusStats.vitalityMax + targetEffect.inventory.armorData.armorStatic.vitalityMax) - targetEffect.hitPoint);
                     break;
+
             }
             print("Ефект працює2");
 

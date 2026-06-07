@@ -42,7 +42,19 @@ public class NPCZoneScr : MonoBehaviour
     // ─────────────────────────────────────────
     // SHOP
     // ─────────────────────────────────────────
+    private void OnEnable()
+    {
+        if (zoneUI == null)
+            zoneUI = FindObjectOfType<NPCZoneUIScr>(true);
 
+        // страховка після сцени
+        if (zoneUI != null)
+        {
+            zoneUI.SelectNPCPanel.SetActive(false);
+            zoneUI.UIPanel.SetActive(false);
+            zoneUI.UIPanelShop.SetActive(false);
+        }
+    }
     public void ShopStart()
     {
         if (shop == null)
@@ -93,9 +105,14 @@ public class NPCZoneScr : MonoBehaviour
     public void OpenInteraction()
     {
         if (zoneUI == null)
+            zoneUI = FindObjectOfType<NPCZoneUIScr>(true);
+
+        if (zoneUI == null)
             return;
 
         zoneUI.SelectNPCPanel.SetActive(true);
+        zoneUI.UIPanel.SetActive(false);
+        zoneUI.UIPanelShop.SetActive(false);
     }
 
     public void OpenShop()
@@ -126,10 +143,12 @@ public class NPCZoneScr : MonoBehaviour
     public void ExitShop()
     {
         if (zoneUI == null)
+            zoneUI = FindObjectOfType<NPCZoneUIScr>(true);
+
+        if (zoneUI == null)
             return;
 
         zoneUI.UIPanelShop.SetActive(false);
-
         zoneUI.SelectNPCPanel.SetActive(true);
     }
 }

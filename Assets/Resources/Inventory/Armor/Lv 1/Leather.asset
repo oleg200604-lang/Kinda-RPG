@@ -18,7 +18,7 @@ MonoBehaviour:
     power: 1
     speed: 1
     staminaMax: 0
-    vitalityMax: 0
+    vitalityMax: 5
   effectItemClass: []
   armor: 1
   description: Not the best protection, but it does a wonderful job highlighting

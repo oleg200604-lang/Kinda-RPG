@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sword
   m_EditorClassIdentifier: 
   level: 3
-  iconSprite: {fileID: 0}
+  iconSprite: {fileID: 21300000, guid: acf5b4803662a6349990721cb2f49784, type: 3}
   defendClass:
     defens: 6
     defensRecharge: 0

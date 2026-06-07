@@ -75,12 +75,14 @@ public class PointScr : MonoBehaviour
 
     private void RefreshTypeVisual()
     {
+        zoneUI = NPCZoneUIScr.Instance;
         if (spriteType == null)
             return;
 
         // UI LINKS
         if (city != null)
         {
+
             city.zoneUI = zoneUI;
         }
 
