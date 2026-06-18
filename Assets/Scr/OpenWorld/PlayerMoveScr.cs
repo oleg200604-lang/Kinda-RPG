@@ -83,13 +83,11 @@ public class PlayerMoveScr : MonoBehaviour
             InteractWithCurrentPoint();
         }
 
-        Inventory();
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Inventory();
+        }
     }
-
-    // ─────────────────────────────────────────
-    // INTERACTION
-    // ─────────────────────────────────────────
-
     public void InteractWithCurrentPoint()
     {
         if (currentPoint == null)
@@ -331,8 +329,6 @@ public class PlayerMoveScr : MonoBehaviour
 
     private void Inventory()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
             if (panelUI[0].activeSelf)
             {
                 CloseInventory();
@@ -341,7 +337,7 @@ public class PlayerMoveScr : MonoBehaviour
             {
                 OpenInventory();
             }
-        }
+        
     }
     public void OpenCurrentShop()
     {

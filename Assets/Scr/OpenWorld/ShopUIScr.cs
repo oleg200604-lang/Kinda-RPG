@@ -39,23 +39,6 @@ public class ShopUIScr : MonoBehaviour
     public int selectItem = -1;
     public SlotUIScr selectSlotSlot;
 
-    [Header("Info UI")]
-    public TextMeshProUGUI inventoryNameText;
-    public TextMeshProUGUI inventoryDescriptionText;
-
-    public GameObject infoPanel;
-
-    public GameObject weaponPanel;
-    public TextMeshProUGUI weaponAttackText;
-    public TextMeshProUGUI weaponDefenText;
-
-    public GameObject armorPanel;
-    public TextMeshProUGUI[] armorStaticText;
-    public TextMeshProUGUI armorArmorText;
-
-    public GameObject itemPanel;
-    public TextMeshProUGUI itemStaticText;
-    public TextMeshProUGUI itemMaxText;
 
 
     private void InitShopSlots()
@@ -368,7 +351,6 @@ public class ShopUIScr : MonoBehaviour
         if (itemIndex < 0 || itemIndex >= shop.itemsShop.Count)
             return;
 
-        UpdateInfoUI(shop.itemsShop[itemIndex]);
     }
 
     public void SelectEnterInventoryUI(int itemIndex)
@@ -377,60 +359,12 @@ public class ShopUIScr : MonoBehaviour
             itemIndex >= inventoryScr.sharedInventory.inventory.Length)
             return;
 
-        UpdateInfoUI(
-            inventoryScr.sharedInventory.inventory[itemIndex]);
     }
 
     public void SelectExitItemUI()
     {
-        UpdateInfoUI(selectItem);
     }
 
-    private void UpdateInfoUI(int itemId)
-    {
-        if (itemId < 0 ||
-            itemId >= dataCarrier.allItems.Length)
-        {
-            infoPanel.SetActive(false);
-            weaponPanel.SetActive(false);
-            armorPanel.SetActive(false);
-            itemPanel.SetActive(false);
-            return;
-        }
-
-        ScriptableObject item =
-            dataCarrier.allItems[itemId];
-
-        infoPanel.SetActive(true);
-
-        weaponPanel.SetActive(false);
-        armorPanel.SetActive(false);
-        itemPanel.SetActive(false);
-
-        inventoryNameText.text = item.name;
-
-        if (item is WeaponData weapon)
-        {
-            weaponPanel.SetActive(true);
-
-            inventoryDescriptionText.text =
-                weapon.description;
-        }
-        else if (item is ArmorData armor)
-        {
-            armorPanel.SetActive(true);
-
-            inventoryDescriptionText.text =
-                armor.description;
-        }
-        else if (item is ItemData usable)
-        {
-            itemPanel.SetActive(true);
-
-            inventoryDescriptionText.text =
-                usable.description;
-        }
-    }
 
     // ─────────────────────────────────────────
     // SWAP

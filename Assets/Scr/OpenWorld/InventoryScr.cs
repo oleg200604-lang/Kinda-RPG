@@ -2,10 +2,35 @@
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 [DefaultExecutionOrder(-50)]
 public class InventoryScr : MonoBehaviour
 {
+    [Header("Player Stats UI")]
+    public TextMeshProUGUI upgradePointsText;
+
+    public TextMeshProUGUI powerText;
+    public TextMeshProUGUI speedText;
+    public TextMeshProUGUI staminaText;
+    public TextMeshProUGUI vitalityText;
+
+    public Image imageStaticSpeedAttack;
+    public TextMeshProUGUI damageText;
+    public TextMeshProUGUI attackRechargeText;
+    public TextMeshProUGUI attackCostText;
+
+    public TextMeshProUGUI defendText;
+    public TextMeshProUGUI defendCostText;
+    public TextMeshProUGUI defendRechargeText;
+
+    [Header("Info Panel Positioning")]
+    public RectTransform canvasRect;      // RectTransform головного Canvas
+    public Vector2 panelOffset = new Vector2(16f, 0f);
+    public Vector2 panelPadding = new Vector2(8f, 8f);
+
+    private Canvas _rootCanvas;
+    private RectTransform _weaponPanelRect, _armorPanelRect, _itemPanelRect;
     [Header("Start Item")] public int startItemId = 0;
 
     [Header("Inventory Slots")]
@@ -17,12 +42,15 @@ public class InventoryScr : MonoBehaviour
     public ArmorData noneArmor;
 
     [Header("Info Panels")]
-    public GameObject nonePanel, infoPanel, weaponPanel, armorPanel, itemPanel;
-    public TextMeshProUGUI inventoryNameText, inventoryDescriptionText;
-    public TextMeshProUGUI weaponAttackText, weaponDefenText;
+    public GameObject weaponPanel, armorPanel, itemPanel;
+    public TextMeshProUGUI[] inventoryNameText, inventoryDescriptionText;
+    public TextMeshProUGUI[] weaponAttackText, weaponDefenText;
     public TextMeshProUGUI[] armorStaticText;
     public TextMeshProUGUI armorArmorText, itemStaticText, itemMaxText;
 
+
+    public Image imageSpeedAttack;
+    public Sprite[] spriteSpeedAttack;
     [Header("Shared")]
     public InventoryData sharedInventory;
 
@@ -31,18 +59,18 @@ public class InventoryScr : MonoBehaviour
     private BattleDataCarrier dataCarrier;
     private float saveTimer;
 
-    // --- Кеш для UpdateInventoryUI ---
     private int[] _cachedInv;
     private int _cachedWeapon = int.MinValue, _cachedArmor = int.MinValue;
     private int[] _cachedItems;
     private int _cachedSelect = int.MinValue;
 
+    private bool isHoveringSlot = false;
+    private int hoveredId = -1;
+    private RectTransform hoveredSlot = null;
     public KeyCode interactKey;
     private void Awake()
     {
         dataCarrier = BattleDataCarrier.Instance;
-
-        // ВИПРАВЛЕННЯ 1: Preload усіх ScriptableObject — усуває лаг при першому відкритті UI
         foreach (var item in dataCarrier.allItems)
             if (item != null) _ = item.name;
 
@@ -50,8 +78,48 @@ public class InventoryScr : MonoBehaviour
         StartCoroutine(SavePositionRoutine());
         UpdateInventoryUI();
         transform.position = sharedInventory.playerPosition;
-    }
 
+        _weaponPanelRect = weaponPanel.GetComponent<RectTransform>();
+        _armorPanelRect = armorPanel.GetComponent<RectTransform>();
+        _itemPanelRect = itemPanel.GetComponent<RectTransform>();
+        _rootCanvas = canvasRect != null ? canvasRect.GetComponentInParent<Canvas>() : GetComponentInParent<Canvas>();
+        weaponPanel.GetComponent<CanvasGroup>().blocksRaycasts = false;
+        armorPanel.GetComponent<CanvasGroup>().blocksRaycasts = false;
+        itemPanel.GetComponent<CanvasGroup>().blocksRaycasts = false;
+    }
+    private void PositionInfoPanelNearSlot(RectTransform slotRect, RectTransform panelRect)
+    {
+        UpdatePlayerStatsUI();
+        if (slotRect == null || panelRect == null || canvasRect == null)
+            return;
+
+        Canvas.ForceUpdateCanvases();
+
+        Camera cam = (_rootCanvas != null && _rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
+            ? _rootCanvas.worldCamera
+            : null;
+
+        Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(cam, slotRect.position);
+
+        Vector2 panelSize = panelRect.rect.size;
+
+        Vector2 targetScreen = screenPos + new Vector2(panelSize.x * 0.5f + panelOffset.x, panelOffset.y);
+
+        float screenWidth = Screen.width;
+        float screenHeight = Screen.height;
+
+        if (targetScreen.x + panelSize.x > screenWidth)
+        {
+            targetScreen = screenPos - new Vector2(panelSize.x * 0.5f + panelOffset.x, -panelOffset.y);
+        }
+
+        targetScreen.x = Mathf.Clamp(targetScreen.x, 0, screenWidth);
+        targetScreen.y = Mathf.Clamp(targetScreen.y, 0, screenHeight);
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, targetScreen, cam, out Vector2 localPos);
+
+        panelRect.anchoredPosition = localPos;
+    }
     private void LoadOrInit()
     {
         var loaded = SaveSystem.Load();
@@ -120,6 +188,10 @@ public class InventoryScr : MonoBehaviour
             SaveSystem.Save(sharedInventory);
 
             Debug.Log("SAVE RESET");
+        }
+        if (selectItem != -1)
+        {
+            HideInfoPanels();
         }
         saveTimer += Time.deltaTime;
         if (saveTimer > 2f) { SaveSystem.Save(sharedInventory); saveTimer = 0f; }
@@ -206,30 +278,112 @@ public class InventoryScr : MonoBehaviour
     #endregion
 
     #region Info Panel
-    // ВИПРАВЛЕННЯ 2: Один метод замість 4 копій — ShowItemInfo(id)
-    public void ShowItemInfo(int id)
+
+    public void UpdatePlayerStatsUI()
     {
-        bool valid = id >= 0;
-        nonePanel.SetActive(!valid);
-        infoPanel.SetActive(valid);
-        if (!valid) { weaponPanel.SetActive(false); armorPanel.SetActive(false); itemPanel.SetActive(false); return; }
+        ArmorData armor =
+            sharedInventory.armor >= 0
+            ? dataCarrier.allItems[sharedInventory.armor] as ArmorData
+            : noneArmor;
+
+        WeaponData weapon =
+            sharedInventory.weapon >= 0
+            ? dataCarrier.allItems[sharedInventory.weapon] as WeaponData
+            : null;
+
+        // Бали покращення
+        upgradePointsText.text = sharedInventory.playerPosition.ToString();
+
+        // Стати + бонус броні
+        powerText.text =(sharedInventory.staticPlayer.power + armor.armorStatic.power).ToString();
+
+        speedText.text =
+            (sharedInventory.staticPlayer.speed + armor.armorStatic.speed).ToString();
+
+        staminaText.text =(sharedInventory.staticPlayer.staminaMax + armor.armorStatic.staminaMax).ToString();
+
+        vitalityText.text = (sharedInventory.staticPlayer.vitalityMax + armor.armorStatic.vitalityMax).ToString();
+
+        if (weapon != null)
+        {
+            // Атака
+            damageText.text = weapon.attackClass.damage.ToString();
+            attackRechargeText.text = weapon.attackClass.attackRecharge.ToString();
+            attackCostText.text = weapon.attackClass.attackCost.ToString();
+
+            // Захист
+            defendText.text = (weapon.defendClass.defens + armor.armor).ToString();
+            defendCostText.text = weapon.defendClass.DefendCost.ToString();
+            defendRechargeText.text = weapon.defendClass.defensRecharge.ToString();
+
+            if (weapon.attackClass.attacType == AttacType.Slow)
+            {
+                imageStaticSpeedAttack.sprite = spriteSpeedAttack[1];
+            }
+            else
+            {
+                imageStaticSpeedAttack.sprite = spriteSpeedAttack[0];
+            }
+        }
+        else
+        {
+            damageText.text = "0";
+            attackRechargeText.text = "0";
+            attackCostText.text = "0";
+
+            defendText.text = "0";
+            defendRechargeText.text = "0";
+            defendCostText.text = "0";
+        }
+
+    }
+    private void HideInfoPanels()
+    {
+        weaponPanel.SetActive(false);
+        armorPanel.SetActive(false);
+        itemPanel.SetActive(false);
+    }
+    public void ShowItemInfo(int id, RectTransform anchorSlot = null)
+    {
+        if (id < 0)
+        {
+            HideInfoPanels();
+            return;
+        }
 
         var data = dataCarrier.allItems[id];
+        RectTransform targetPanelRect = null;
 
         if (data is WeaponData w)
         {
-            weaponPanel.SetActive(true); armorPanel.SetActive(false); itemPanel.SetActive(false);
-            inventoryNameText.text = $"{w.name} {w.Level}Lv";
-            inventoryDescriptionText.text = w.description;
-            string prefix = w.attackClass.attacType == AttacType.Slow ? "+" : "*";
-            weaponAttackText.text = $" {prefix}{w.attackClass.damage}/{w.attackClass.attackRecharge}/{w.attackClass.attackCost}";
-            weaponDefenText.text = $"{w.defendClass.defens}/{w.defendClass.defensRecharge}/{w.defendClass.DefendCost}";
+            weaponPanel.SetActive(true);
+            armorPanel.SetActive(false);
+            itemPanel.SetActive(false);
+
+            targetPanelRect = _weaponPanelRect;
+
+            inventoryNameText[0].text = $"{w.name} {w.Level}Lv";
+            inventoryDescriptionText[0].text = w.description;
+
+            weaponAttackText[0].text = $"{w.attackClass.damage}";
+            weaponAttackText[1].text = $"{w.attackClass.attackRecharge}";
+            weaponAttackText[2].text = $"{w.attackClass.attackCost}";
+
+            weaponDefenText[0].text = $"{w.defendClass.defens}";
+            weaponDefenText[1].text = $"{w.defendClass.defensRecharge}";
+            weaponDefenText[2].text = $"{w.defendClass.DefendCost}";
         }
         else if (data is ArmorData a)
         {
-            weaponPanel.SetActive(false); armorPanel.SetActive(true); itemPanel.SetActive(false);
-            inventoryNameText.text = $"{a.name} {a.Level}Lv";
-            inventoryDescriptionText.text = a.description;
+            weaponPanel.SetActive(false);
+            armorPanel.SetActive(true);
+            itemPanel.SetActive(false);
+
+            targetPanelRect = _armorPanelRect;
+
+            inventoryNameText[1].text = $"{a.name} {a.Level}Lv";
+            inventoryDescriptionText[1].text = a.description;
+
             armorArmorText.text = a.armor.ToString();
             armorStaticText[0].text = a.armorStatic.power.ToString();
             armorStaticText[1].text = a.armorStatic.speed.ToString();
@@ -238,31 +392,100 @@ public class InventoryScr : MonoBehaviour
         }
         else if (data is ItemData it)
         {
-            weaponPanel.SetActive(false); armorPanel.SetActive(false); itemPanel.SetActive(true);
-            inventoryNameText.text = $"{it.name} {it.Level}Lv";
-            inventoryDescriptionText.text = it.description;
+            weaponPanel.SetActive(false);
+            armorPanel.SetActive(false);
+            itemPanel.SetActive(true);
+
+            targetPanelRect = _itemPanelRect;
+
+            inventoryNameText[2].text = $"{it.name} {it.Level}Lv";
+            inventoryDescriptionText[2].text = it.description;
+
             itemStaticText.text = $"{it.itemRecharge} {it.itemCost}";
             itemMaxText.text = it.itemMaxAmount.ToString();
         }
-    }
 
+        if (anchorSlot != null && targetPanelRect != null)
+            PositionInfoPanelNearSlot(anchorSlot, targetPanelRect);
+    }
     public void SelectEnterItemUI(int slotIndex)
     {
-        int hovered = sharedInventory.inventory[slotIndex];
-        ShowItemInfo(hovered >= 0 ? hovered : selectItem);
+        int id = sharedInventory.inventory[slotIndex];
+
+        if (id < 0)
+        {
+            isHoveringSlot = false;
+            hoveredId = -1;
+            HideInfoPanels();
+            return;
+        }
+
+        isHoveringSlot = true;
+        hoveredId = id;
+        hoveredSlot = slotUI[slotIndex].transform as RectTransform;
+
+        ShowItemInfo(id, hoveredSlot);
     }
 
-    public void SelectExitItemUI() => ShowItemInfo(selectItem);
-    public void UpdateWeaponUI() => ShowItemInfo(sharedInventory.weapon >= 0 ? sharedInventory.weapon : selectItem);
-    public void UpdateArmorUI() => ShowItemInfo(sharedInventory.armor >= 0 ? sharedInventory.armor : selectItem);
-    public void UpdateItemUI(int i) => ShowItemInfo(sharedInventory.items[i] >= 0 ? sharedInventory.items[i] : selectItem);
+    public void SelectExitItemUI()
+    {
+        isHoveringSlot = false;
+        hoveredId = -1;
+        hoveredSlot = null;
+
+        HideInfoPanels();
+    }
+    public void UpdateWeaponUI()
+    {
+        if (sharedInventory.weapon < 0)
+        {
+            HideInfoPanels();
+            return;
+        }
+
+        ShowItemInfo(
+            sharedInventory.weapon,
+            slotWeaponUI.transform as RectTransform);
+    }
+    public void UpdateArmorUI()
+    {
+        if (sharedInventory.armor < 0)
+        {
+            HideInfoPanels();
+            return;
+        }
+
+        ShowItemInfo(
+            sharedInventory.armor,
+            slotArmorUI.transform as RectTransform);
+    }
+    public void UpdateItemUI(int i)
+    {
+        int id = sharedInventory.items[i];
+
+        if (id < 0)
+        {
+            HideInfoPanels();
+            return;
+        }
+
+        ShowItemInfo(
+            id,
+            inventoryItemUI[i].transform as RectTransform);
+    }
     #endregion
 
     #region Core Logic
     public void SwitchInventory(int index)
     {
-        if ((uint)index >= (uint)sharedInventory.inventory.Length) return;
-        (sharedInventory.inventory[index], selectItem) = (selectItem, sharedInventory.inventory[index]);
+        if ((uint)index >= (uint)sharedInventory.inventory.Length)
+            return;
+
+        (sharedInventory.inventory[index], selectItem) =
+            (selectItem, sharedInventory.inventory[index]);
+
+        HideInfoPanels();
+
         SaveSystem.Save(sharedInventory);
         UpdateInventoryUI();
     }
@@ -273,7 +496,10 @@ public class InventoryScr : MonoBehaviour
             (sharedInventory.weapon, selectItem) = (selectItem, sharedInventory.weapon);
         else
             (sharedInventory.weapon, selectItem) = (-1, sharedInventory.weapon);
+
+        HideInfoPanels();
         UpdateInventoryUI();
+
     }
 
     public void EquipArmor()
@@ -314,6 +540,7 @@ public class InventoryScr : MonoBehaviour
         (sharedInventory.armor, selectItem) =
             (selectItem, sharedInventory.armor);
 
+        HideInfoPanels();
         UpdateInventoryUI();
     }
 
@@ -321,6 +548,8 @@ public class InventoryScr : MonoBehaviour
     {
         if (selectItem >= 0 && dataCarrier.allItems[selectItem] is ItemData)
             (sharedInventory.items[index], selectItem) = (selectItem, sharedInventory.items[index]);
+
+        HideInfoPanels();
         UpdateInventoryUI();
     }
 

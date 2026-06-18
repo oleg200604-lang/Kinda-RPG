@@ -57,7 +57,7 @@ MonoBehaviour:
     powerRC: 3
     targetRC: 1
   attackRC: 1
-  defendRC: 1.5
+  defendRC: 2
   skipRC: 1
   itemRC:
   - 0

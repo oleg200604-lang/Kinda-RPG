@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public enum pointType
 {
@@ -259,7 +260,10 @@ public class PointScr : MonoBehaviour
     // ─────────────────────────────────────────
 
     private void OnMouseDown()
-    {
-        OnPointClicked?.Invoke(this);
-    }
+{
+    if (EventSystem.current.IsPointerOverGameObject())
+        return;
+
+    OnPointClicked?.Invoke(this);
+}
 }
