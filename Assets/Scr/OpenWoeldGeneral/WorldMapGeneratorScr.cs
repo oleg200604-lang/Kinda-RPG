@@ -471,7 +471,6 @@ public class WorldMapGeneratorScr : MonoBehaviour
         p.id = nextId++;
         p.depth = depth;
         p.dataCarrier = dataCarrier;
-        p.zoneUI = zoneUI;
         allPoints.Add(p);
         p.Init();
 
@@ -554,7 +553,6 @@ public class WorldMapGeneratorScr : MonoBehaviour
             if (p == null)
                 continue;
 
-            p.zoneUI = zoneUI;
 
             p.Init();
         }

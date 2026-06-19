@@ -16,7 +16,6 @@ public class PointScr : MonoBehaviour
     [Header("References")]
     public BattleDataCarrier dataCarrier;
     public WorldMapGeneratorScr worldMapGeneratorScr;
-    public NPCZoneUIScr zoneUI;
 
     [Header("Type")]
     public pointType pointType;
@@ -76,27 +75,6 @@ public class PointScr : MonoBehaviour
 
     private void RefreshTypeVisual()
     {
-        zoneUI = NPCZoneUIScr.Instance;
-        if (spriteType == null)
-            return;
-
-        // UI LINKS
-        if (city != null)
-        {
-
-            city.zoneUI = zoneUI;
-        }
-
-        if (enemy != null)
-        {
-            enemy.zoneUI = zoneUI;
-        }
-
-        if (boss != null)
-        {
-            boss.zoneUI = zoneUI;
-        }
-
         // DISABLE ALL
         if (city != null)
             city.enabled = false;
@@ -153,10 +131,11 @@ public class PointScr : MonoBehaviour
 
                 if (city != null)
                 {
+                    NPCZoneUIScr zoneUI = NPCZoneUIScr.Instance;
+
                     if (zoneUI != null)
                     {
-                        bool active =
-                            zoneUI.SelectNPCPanel.activeSelf;
+                        bool active = zoneUI.SelectNPCPanel.activeSelf;
 
                         zoneUI.SelectNPCPanel.SetActive(!active);
 
@@ -260,10 +239,10 @@ public class PointScr : MonoBehaviour
     // ─────────────────────────────────────────
 
     private void OnMouseDown()
-{
-    if (EventSystem.current.IsPointerOverGameObject())
-        return;
+    {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
 
-    OnPointClicked?.Invoke(this);
-}
+        OnPointClicked?.Invoke(this);
+    }
 }

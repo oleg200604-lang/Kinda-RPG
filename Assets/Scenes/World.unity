@@ -27894,6 +27894,7 @@ MonoBehaviour:
   moveSpeed: 4
   interactKey: 102
   currentPoint: {fileID: 0}
+  zoneUI: {fileID: 739682804}
 --- !u!114 &1813265916
 MonoBehaviour:
   m_ObjectHideFlags: 0

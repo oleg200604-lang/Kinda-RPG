@@ -295,10 +295,9 @@ public class InventoryScr : MonoBehaviour
         upgradePointsText.text = sharedInventory.playerPosition.ToString();
 
         // Стати + бонус броні
-        powerText.text =(sharedInventory.staticPlayer.power + armor.armorStatic.power).ToString();
+        powerText.text = (sharedInventory.staticPlayer.power + armor.armorStatic.power).ToString();
 
-        speedText.text =
-            (sharedInventory.staticPlayer.speed + armor.armorStatic.speed).ToString();
+        speedText.text = (sharedInventory.staticPlayer.speed + armor.armorStatic.speed).ToString();
 
         staminaText.text =(sharedInventory.staticPlayer.staminaMax + armor.armorStatic.staminaMax).ToString();
 

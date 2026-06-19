@@ -22,7 +22,7 @@ public class PlayerMoveScr : MonoBehaviour
 
     [Header("Runtime")]
     public PointScr currentPoint;
-
+    public NPCZoneUIScr zoneUI;
     private static int savedPointId = -1;
 
     private bool isMoving;
@@ -347,9 +347,8 @@ public class PlayerMoveScr : MonoBehaviour
         if (currentPoint.pointType != pointType.city)
             return;
 
-        if (currentPoint.city == null)
+        if (currentPoint?.city == null)
             return;
-
         currentPoint.city.OpenShop();
     }
     public void OpenInventory()

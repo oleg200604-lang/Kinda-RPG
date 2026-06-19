@@ -3,9 +3,6 @@
 public class PlayerInventoryScr : MonoBehaviour
 {
 
-    [Header("Shared Inventory (source)")]
-    [SerializeField] private InventoryData sharedInventory;
-
     public WeaponData weaponData;
     public ArmorData armorData;
     public ItemData[] itemData;
@@ -24,7 +21,6 @@ public class PlayerInventoryScr : MonoBehaviour
             return;
         }
 
-        sharedInventory = source;
         if (source.weapon > -1)
         {
             if (battleData.allItems[source.weapon] is WeaponData weapon)
